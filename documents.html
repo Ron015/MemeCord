@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Generator API - Complete Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: rgba(10, 10, 15, 0.95);
+            --bg-secondary: rgba(20, 20, 30, 0.85);
+            --bg-card: rgba(30, 30, 45, 0.8);
+            --bg-hover: rgba(40, 40, 60, 0.9);
+            --text-primary: #e0e0ff;
+            --text-secondary: #b0b0d0;
+            --accent: #6c63ff;
+            --accent-light: #8a84ff;
+            --accent-dark: #554fd8;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --border: rgba(100, 100, 150, 0.3);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --border-radius: 12px;
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(108, 99, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 40%);
+            backdrop-filter: blur(2px);
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--bg-secondary);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        nav a:hover {
+            color: var(--accent-light);
+            background-color: var(--bg-hover);
+        }
+
+        nav a.active {
+            color: var(--accent);
+            background-color: var(--bg-hover);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            flex: 0 0 280px;
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            height: fit-content;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .method-list {
+            list-style: none;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .method-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .method-list::-webkit-scrollbar-thumb {
+            background-color: var(--accent);
+            border-radius: 10px;
+        }
+
+        .method-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .method-list a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .method-list a:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+            border-left-color: var(--accent);
+        }
+
+        .method-list a.active {
+            background-color: var(--bg-hover);
+            color: var(--accent-light);
+            border-left-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .category-filter {
+            margin-top: 1.5rem;
+        }
+
+        .category-filter select {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .category-filter select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-light);
+            background: linear-gradient(to right, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-secondary);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .badge i {
+            color: var(--accent);
+        }
+
+        .badge.primary {
+            background-color: rgba(108, 99, 255, 0.2);
+            border-color: var(--accent);
+        }
+
+        /* Method Cards */
+        .method-card {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .method-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .method-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .method-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .method-name {
+            font-size: 1.8rem;
+            color: var(--accent-light);
+        }
+
+        .method-tag {
+            padding: 0.3rem 0.8rem;
+            background-color: var(--bg-secondary);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        .method-category {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .category-tag {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .category-tag.text {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #81C784;
+        }
+
+        .category-tag.image {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #64B5F6;
+        }
+
+        .category-tag.mixed {
+            background-color: rgba(156, 39, 176, 0.2);
+            color: #BA68C8;
+        }
+
+        .category-tag.special {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #FFB74D;
+        }
+
+        .method-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .method-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section h4 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-section h4 i {
+            font-size: 0.9rem;
+        }
+
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .param-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+
+        .param-table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        .param-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .code-block {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            margin-top: 0.5rem;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .code-keyword {
+            color: #FF79C6;
+        }
+
+        .code-function {
+            color: #50FA7B;
+        }
+
+        .code-string {
+            color: #F1FA8C;
+        }
+
+        .code-comment {
+            color: #6272A4;
+        }
+
+        .code-operator {
+            color: #FF79C6;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-light);
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                position: static;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            
+            nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            
+            nav.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .hero {
+                padding: 1.5rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .method-card {
+                padding: 1.5rem;
+            }
+            
+            .method-name {
+                font-size: 1.5rem;
+            }
+            
+            .param-table {
+                font-size: 0.85rem;
+            }
+            
+            .param-table th,
+            .param-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+            z-index: 100;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            background-color: var(--accent-light);
+            transform: translateY(-5px);
+        }
+
+        /* Search */
+        .search-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 3rem;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-laugh-squint"></i>
+            <span>Meme Generator API</span>
+        </div>
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <nav id="mainNav">
+            <a href="#getting-started" class="active">Getting Started</a>
+            <a href="#methods">All Methods</a>
+            <a href="#examples">Examples</a>
+            <a href="#about">About</a>
+        </nav>
+    </header>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="methodSearch" placeholder="Search methods...">
+                </div>
+            </div>
+            
+            <h3>All Meme Methods</h3>
+            <ul class="method-list" id="methodList">
+                <!-- Dynamically populated -->
+            </ul>
+            
+            <div class="category-filter">
+                <h3>Filter by Category</h3>
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="text">Text Memes</option>
+                    <option value="image">Image Overlay</option>
+                    <option value="mixed">Mixed (Text + Image)</option>
+                    <option value="special">Special Formats</option>
+                </select>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Hero Section -->
+            <section class="hero" id="getting-started">
+                <h1>Meme Generator API</h1>
+                <p>A comprehensive Node.js library for generating memes programmatically. This library provides 80+ meme templates with support for text, image overlays, and special effects.</p>
+                
+                <div class="hero-badges">
+                    <div class="badge primary">
+                        <i class="fas fa-code"></i>
+                        <span>Node.js Canvas</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-image"></i>
+                        <span>80+ Templates</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-font"></i>
+                        <span>Text Wrapping</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <span>URL & Local Images</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Installation -->
+            <section class="method-card">
+                <div class="method-header">
+                    <div class="method-title">
+                        <h2 class="method-name">Installation & Setup</h2>
+                    </div>
+                </div>
+                
+                <div class="method-description">
+                    <p>To use the Meme Generator library, you need to have Node.js installed. The library uses the <code>canvas</code> package for image manipulation.</p>
+                </div>
+                
+                <div class="method-details">
+                    <div class="detail-section">
+                        <h4><i class="fas fa-terminal"></i> Installation</h4>
+                        <div class="code-block">
+                            <pre><code class="code-keyword">npm</code> install memecord </pre>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4><i class="fas fa-file-import"></i> Basic Usage</h4>
+                        <div class="code-block">
+                            <pre><code class="code-keyword">const</code> Meme = <span class="code-function">require</span>(<span class="code-string">'memecord'</span>);
+<span class="code-keyword">const</code> meme = <span class="code-keyword">new</span> <span class="code-function">Meme</span>();
+
+<span class="code-comment">// Generate a changemymind meme</span>
+<span class="code-keyword">async</code> <span class="code-keyword">function</span> <span class="code-function">generateMeme</span>() {
+    <span class="code-keyword">try</code> {
+        <span class="code-keyword">const</code> buffer = <span class="code-keyword">await</span> meme.<span class="code-function">changemymind</span>(<span class="code-string">'JavaScript is the best programming language'</span>);
+        <span class="code-keyword">await</span> fs.<span class="code-function">writeFile</span>(<span class="code-string">'output.jpg'</span>, buffer);
+        <span class="code-function">console</span>.<span class="code-function">log</span>(<span class="code-string">'Meme generated!'</span>);
+    } <span class="code-keyword">catch</span> (error) {
+        <span class="code-function">console</span>.<span class="code-function">error</span>(<span class="code-string">'Error:'</span>, error.<span class="code-function">message</span>);
+    }
+}
+
+<span class="code-function">generateMeme</span>();</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Methods will be dynamically inserted here -->
+            <div id="methodsContainer">
+                <!-- Method cards will be inserted here by JavaScript -->
+            </div>
+        </main>
+    </div>
+    
+    <!-- Scroll to Top Button -->
+    <div class="scroll-top" id="scrollTopBtn">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+    
+    <!-- Footer -->
+    <footer id="about">
+        <div class="footer-content">
+            <div class="logo">
+                <i class="fas fa-laugh-squint"></i>
+                <span>Meme Generator API</span>
+            </div>
+            
+            <p>A powerful Node.js library for creating memes programmatically with 80+ templates.</p>
+            
+            <div class="footer-links">
+                <a href="#getting-started">Getting Started</a>
+                <a href="#methods">Documentation</a>
+                <a href="https://github.com" target="_blank">GitHub</a>
+                <a href="https://npmjs.com" target="_blank">NPM</a>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 Meme Generator API. All rights reserved. Meme templates are property of their respective owners.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Meme methods data extracted from your code
+        const memeMethods = [
+            {
+                name: "abandon",
+                category: "text",
+                description: "Generates an 'abandon all hope' meme with custom text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display on the meme" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.abandon('All hope of finishing this project on time');"
+            },
+            {
+                name: "aborted",
+                category: "image",
+                description: "Creates a 'aborted' meme with an avatar image overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "URL or file path to the avatar image" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.aborted('https://example.com/avatar.jpg');"
+            },
+            {
+                name: "affect",
+                category: "image",
+                description: "Generates an 'affect' meme with an avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "URL or file path to the avatar image" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.affect('avatar.png');"
+            },
+            {
+                name: "america",
+                category: "image",
+                description: "Creates an American flag overlay on an avatar with 50% opacity.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "URL or file path to the avatar image" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.america('profile.jpg');"
+            },
+            {
+                name: "armor",
+                category: "text",
+                description: "Generates an 'armor' meme with custom text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display on the armor" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.armor('My code has no bugs');"
+            },
+            {
+                name: "balloon",
+                category: "text",
+                description: "Creates a balloon meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.balloon('Me', 'My productivity');"
+            },
+            {
+                name: "bed",
+                category: "image",
+                description: "Generates a 'bed' meme with two avatars.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "First avatar URL or path" },
+                    { name: "avatar1", type: "string", required: true, description: "Second avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.bed('avatar1.jpg', 'avatar2.jpg');"
+            },
+            {
+                name: "bongocat",
+                category: "image",
+                description: "Creates a bongo cat meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.bongocat('cat.jpg');"
+            },
+            {
+                name: "boo",
+                category: "text",
+                description: "Generates a 'boo' meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text (left side)" },
+                    { name: "text2", type: "string", required: true, description: "Second text (right side)" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.boo('Small brain', 'Galaxy brain');"
+            },
+            {
+                name: "brain",
+                category: "text",
+                description: "Creates a 4-panel brain expansion meme.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "Text for first brain panel" },
+                    { name: "text2", type: "string", required: true, description: "Text for second brain panel" },
+                    { name: "text3", type: "string", required: true, description: "Text for third brain panel" },
+                    { name: "text4", type: "string", required: true, description: "Text for fourth brain panel" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.brain('Eat', 'Sleep', 'Code', 'Repeat');"
+            },
+            {
+                name: "brazzers",
+                category: "image",
+                description: "Adds a Brazzers logo overlay to an avatar.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.brazzers('photo.jpg');"
+            },
+            {
+                name: "byemom",
+                category: "mixed",
+                description: "Creates a 'bye mom' meme with avatar, username, and text.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" },
+                    { name: "username0", type: "string", required: true, description: "Username to display" },
+                    { name: "text", type: "string", required: true, description: "Text message" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.byemom('avatar.jpg', 'John', 'Going to buy milk');"
+            },
+            {
+                name: "cancer",
+                category: "image",
+                description: "Generates a cancer meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.cancer('profile.png');"
+            },
+            {
+                name: "changemymind",
+                category: "text",
+                description: "Creates a 'change my mind' meme with rotated text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display on the sign" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.changemymind('Pineapple belongs on pizza');"
+            },
+            {
+                name: "cheating",
+                category: "text",
+                description: "Generates a 'cheating' meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.cheating('Everyone else', 'Me');"
+            },
+            {
+                name: "citation",
+                category: "text",
+                description: "Creates a citation meme with three text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First line of text" },
+                    { name: "text2", type: "string", required: true, description: "Second line of text" },
+                    { name: "text3", type: "string", required: true, description: "Bottom text (centered)" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.citation('I need', 'more coffee', 'Citation needed');"
+            },
+            {
+                name: "communism",
+                category: "image",
+                description: "Adds a communism flag overlay to an avatar with 50% opacity.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.communism('avatar.jpg');"
+            },
+            {
+                name: "confusedcat",
+                category: "text",
+                description: "Generates a confused cat meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "Left side text" },
+                    { name: "text2", type: "string", required: true, description: "Right side text" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.confusedcat('What they say', 'What I hear');"
+            },
+            {
+                name: "cry",
+                category: "text",
+                description: "Creates a 'cry' meme with custom text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.cry('When the code works on the first try');"
+            },
+            {
+                name: "dab",
+                category: "image",
+                description: "Generates a dab meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.dab('dab.jpg');"
+            },
+            {
+                name: "delete",
+                category: "image",
+                description: "Creates a 'delete' meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.delete('trash.png');"
+            },
+            {
+                name: "disability",
+                category: "image",
+                description: "Generates a disability meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.disability('avatar.jpg');"
+            },
+            {
+                name: "doglemon",
+                category: "text",
+                description: "Creates a dog and lemon meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.doglemon('When life gives you lemons', 'Make lemonade');"
+            },
+            {
+                name: "door",
+                category: "image",
+                description: "Generates a 'door' meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.door('knock.jpg');"
+            },
+            {
+                name: "egg",
+                category: "image",
+                description: "Creates an egg meme with small avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.egg('profile.jpg');"
+            },
+            {
+                name: "emergencymeeting",
+                category: "text",
+                description: "Generates an Among Us emergency meeting meme.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Emergency message (max 140 chars)" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.emergencymeeting('I saw red vent');"
+            },
+            {
+                name: "excuseme",
+                category: "text",
+                description: "Creates an 'excuse me' meme with large text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.excuseme('What the actual fork?');"
+            },
+            {
+                name: "expandingwwe",
+                category: "text",
+                description: "Generates a 5-panel expanding brain meme.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "Text for first panel" },
+                    { name: "text2", type: "string", required: true, description: "Text for second panel" },
+                    { name: "text3", type: "string", required: true, description: "Text for third panel" },
+                    { name: "text4", type: "string", required: true, description: "Text for fourth panel" },
+                    { name: "text5", type: "string", required: true, description: "Text for fifth panel" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.expandingwwe('Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5');"
+            },
+            {
+                name: "facts",
+                category: "text",
+                description: "Creates a 'facts' meme with rotated text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.facts('Coffee is a food group');"
+            },
+            {
+                name: "failure",
+                category: "image",
+                description: "Generates a 'failure' meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.failure('myface.jpg');"
+            },
+            {
+                name: "fakenews",
+                category: "image",
+                description: "Creates a fake news meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.fakenews('news.jpg');"
+            },
+            {
+                name: "farmer",
+                category: "text",
+                description: "Generates a farmer meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.farmer('Old McDonald', 'Had a farm');"
+            },
+            {
+                name: "fedora",
+                category: "image",
+                description: "Creates a fedora meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.fedora('m'lady.jpg');"
+            },
+            {
+                name: "floor",
+                category: "mixed",
+                description: "Generates a 'floor' meme with avatar and text.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" },
+                    { name: "text", type: "string", required: true, description: "Text message" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.floor('avatar.png', 'I accidentally the whole thing');"
+            },
+            {
+                name: "fuck",
+                category: "text",
+                description: "Creates an explicit meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.fuck('What I say', 'What I mean');"
+            },
+            {
+                name: "garfield",
+                category: "mixed",
+                description: "Generates a Garfield meme with avatar and text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text at the top" },
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.garfield('I hate Mondays', 'garfield.jpg');"
+            },
+            {
+                name: "gay",
+                category: "image",
+                description: "Adds a rainbow/pride overlay to an avatar with 50% opacity.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.gay('profile.jpg');"
+            },
+            {
+                name: "godwhy",
+                category: "text",
+                description: "Creates a 'god why' meme with text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display (max 127 chars)" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.godwhy('Why am I like this');"
+            },
+            {
+                name: "hitler",
+                category: "image",
+                description: "Generates a Hitler meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.hitler('avatar.jpg');"
+            },
+            {
+                name: "humansgood",
+                category: "text",
+                description: "Creates a 'humans are good' meme with text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.humansgood('But dogs are better');"
+            },
+            {
+                name: "inator",
+                category: "text",
+                description: "Generates an 'inator' meme with smart suffix addition.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to convert to -inator format" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.inator('Coffee'); // Becomes 'Coffeenator'"
+            },
+            {
+                name: "invert",
+                category: "image",
+                description: "Inverts the colors of an avatar image.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.invert('avatar.jpg');"
+            },
+            {
+                name: "jail",
+                category: "image",
+                description: "Adds a jail bars overlay to an avatar.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.jail('criminal.jpg');"
+            },
+            {
+                name: "justpretending",
+                category: "text",
+                description: "Creates a 'just pretending' meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.justpretending('I\'m fine', 'I\'m not fine');"
+            },
+            {
+                name: "keepurdistance",
+                category: "text",
+                description: "Generates a 'keep your distance' meme with uppercase text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display (max 30 chars)" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.keepurdistance('STAY BACK');"
+            },
+            {
+                name: "knowyourlocation",
+                category: "text",
+                description: "Creates a 'know your location' meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.knowyourlocation('Me', 'The void');"
+            },
+            {
+                name: "laid",
+                category: "image",
+                description: "Generates a 'laid' meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.laid('avatar.jpg');"
+            },
+            {
+                name: "lick",
+                category: "text",
+                description: "Creates a 'lick' meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.lick('This meme', 'Tastes good');"
+            },
+            {
+                name: "madethis",
+                category: "image",
+                description: "Generates a 'I made this' meme with two avatars.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "First avatar URL or path" },
+                    { name: "avatar1", type: "string", required: true, description: "Second avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.madethis('creator.jpg', 'thief.jpg');"
+            },
+            {
+                name: "note",
+                category: "text",
+                description: "Creates a note meme with rotated text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display on the note" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.note('Don\'t forget to commit');"
+            },
+            {
+                name: "nothing",
+                category: "text",
+                description: "Generates a 'nothing' meme with text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display (max 120 chars)" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.nothing('Absolutely nothing');"
+            },
+            {
+                name: "ohno",
+                category: "text",
+                description: "Creates an 'oh no' meme with adaptive font size.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.ohno('My code is on production');"
+            },
+            {
+                name: "piccolo",
+                category: "text",
+                description: "Generates a Piccolo meme with large text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display (max 300 chars)" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.piccolo('DODGE!');"
+            },
+            {
+                name: "plan",
+                category: "text",
+                description: "Creates a 4-panel plan meme with three text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "Text for top-left panel" },
+                    { name: "text2", type: "string", required: true, description: "Text for top-right panel" },
+                    { name: "text3", type: "string", required: true, description: "Text for bottom panels" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.plan('Step 1', 'Step 2', 'Step 3: Profit');"
+            },
+            {
+                name: "presentation",
+                category: "text",
+                description: "Generates a presentation meme with text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.presentation('And here\'s why that\'s wrong');"
+            },
+            {
+                name: "rip",
+                category: "image",
+                description: "Creates a RIP tombstone meme with avatar.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.rip('deceased.jpg');"
+            },
+            {
+                name: "roblox",
+                category: "image",
+                description: "Generates a Roblox meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.roblox('noob.jpg');"
+            },
+            {
+                name: "satan",
+                category: "image",
+                description: "Creates a Satan meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.satan('devil.jpg');"
+            },
+            {
+                name: "savehumanity",
+                category: "text",
+                description: "Generates a 'save humanity' meme with rotated text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.savehumanity('One line of code at a time');"
+            },
+            {
+                name: "screams",
+                category: "image",
+                description: "Creates a screams meme with two avatars.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "First avatar URL or path" },
+                    { name: "avatar1", type: "string", required: true, description: "Second avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.screams('screamer1.jpg', 'screamer2.jpg');"
+            },
+            {
+                name: "shit",
+                category: "text",
+                description: "Generates a 'shit' meme with rotated text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.shit('I\'m in deep shit');"
+            },
+            {
+                name: "slap",
+                category: "image",
+                description: "Creates a slap meme with two avatars.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "First avatar URL or path" },
+                    { name: "avatar1", type: "string", required: true, description: "Second avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.slap('slapper.jpg', 'slappee.jpg');"
+            },
+            {
+                name: "slapsroof",
+                category: "text",
+                description: "Generates a 'slaps roof of car' meme with text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display (adds 'in it' automatically)" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.slapsroof('This bad boy can fit so much');"
+            },
+            {
+                name: "sneakyfox",
+                category: "text",
+                description: "Creates a sneaky fox meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.sneakyfox('What you see', 'What she sees');"
+            },
+            {
+                name: "spank",
+                category: "image",
+                description: "Generates a spank meme with two avatars.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "First avatar URL or path" },
+                    { name: "avatar1", type: "string", required: true, description: "Second avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.spank('spanker.jpg', 'spankee.jpg');"
+            },
+            {
+                name: "stroke",
+                category: "text",
+                description: "Creates a stroke meme with small text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.stroke('I having a stroke');"
+            },
+            {
+                name: "surprised",
+                category: "text",
+                description: "Generates a surprised Pikachu meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.surprised('I didn\'t study', 'I failed the test');"
+            },
+            {
+                name: "sword",
+                category: "mixed",
+                description: "Creates a sword meme with username and two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" },
+                    { name: "username0", type: "string", required: true, description: "Username to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.sword('For honor', 'For glory', 'Knight');"
+            },
+            {
+                name: "theoffice",
+                category: "text",
+                description: "Generates an Office meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.theoffice('That\'s what she said', 'Michael Scott');"
+            },
+            {
+                name: "thesearch",
+                category: "text",
+                description: "Creates a 'the search' meme with text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.thesearch('For the meaning of life');"
+            },
+            {
+                name: "trash",
+                category: "image",
+                description: "Generates a trash meme with blurred avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.trash('garbage.jpg');"
+            },
+            {
+                name: "ugly",
+                category: "image",
+                description: "Creates an ugly meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.ugly('myface.jpg');"
+            },
+            {
+                name: "wanted",
+                category: "image",
+                description: "Generates a wanted poster meme with avatar.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.wanted('criminal.jpg');"
+            },
+            {
+                name: "whodidthis",
+                category: "image",
+                description: "Creates a 'who did this' meme with avatar overlay.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.whodidthis('suspect.jpg');"
+            },
+            {
+                name: "whothisis",
+                category: "mixed",
+                description: "Generates a 'who this is' meme with avatar and text.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" },
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.whothisis('stranger.jpg', 'Your mom');"
+            },
+            {
+                name: "walking",
+                category: "text",
+                description: "Creates a walking meme with large text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.walking('Me walking into the weekend');"
+            },
+            {
+                name: "vr",
+                category: "text",
+                description: "Generates a VR meme with centered text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.vr('Reality is disappointing');"
+            },
+            {
+                name: "violence",
+                category: "text",
+                description: "Creates a violence meme with text.",
+                parameters: [
+                    { name: "text", type: "string", required: true, description: "Text to display" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.violence('I choose violence');"
+            },
+            {
+                name: "violentsparks",
+                category: "text",
+                description: "Generates a violent sparks meme with two text parameters.",
+                parameters: [
+                    { name: "text1", type: "string", required: true, description: "First text parameter (white)" },
+                    { name: "text2", type: "string", required: true, description: "Second text parameter (black)" }
+                ],
+                returns: "Buffer (image/jpeg)",
+                example: "await meme.violentsparks('Me trying to code', 'The bugs in my code');"
+            },
+            {
+                name: "youtube",
+                category: "mixed",
+                description: "Creates a YouTube comment meme with avatar, username, and text.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" },
+                    { name: "username0", type: "string", required: true, description: "Username to display" },
+                    { name: "text", type: "string", required: true, description: "Comment text" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.youtube('avatar.jpg', 'CodeMaster', 'First!');"
+            },
+            {
+                name: "tweet",
+                category: "mixed",
+                description: "Generates a realistic Twitter tweet with avatar, username, text, and optional handle.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" },
+                    { name: "username0", type: "string", required: true, description: "Display name" },
+                    { name: "text", type: "string", required: true, description: "Tweet text" },
+                    { name: "username1", type: "string", required: false, description: "Twitter handle (optional)" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.tweet('avatar.jpg', 'Elon Musk', 'Tesla to the moon!', 'elonmusk');"
+            },
+            {
+                name: "quote",
+                category: "mixed",
+                description: "Creates a quote meme with avatar, username, and text.",
+                parameters: [
+                    { name: "avatar0", type: "string", required: true, description: "Avatar URL or path" },
+                    { name: "username0", type: "string", required: true, description: "Username to display" },
+                    { name: "text", type: "string", required: true, description: "Quote text" }
+                ],
+                returns: "Buffer (image/png)",
+                example: "await meme.quote('avatar.jpg', 'Albert Einstein', 'Imagination is more important than knowledge');"
+            },
+            {
+                name: "yomomma",
+                category: "special",
+                description: "Returns a random 'Yo Momma' joke (text only, no image).",
+                parameters: [],
+                returns: "Object { text: string }",
+                example: "const joke = meme.yomomma(); console.log(joke.text);"
+            }
+        ];
+
+        // DOM elements
+        const methodsContainer = document.getElementById('methodsContainer');
+        const methodList = document.getElementById('methodList');
+        const methodSearch = document.getElementById('methodSearch');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mainNav = document.getElementById('mainNav');
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+        // Initialize the page
+        function init() {
+            renderMethodList();
+            renderMethods();
+            setupEventListeners();
+            highlightCurrentMethod();
+        }
+
+        // Render method list in sidebar
+        function renderMethodList() {
+            methodList.innerHTML = '';
+            
+            memeMethods.forEach((method, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a href="#${method.name}" data-index="${index}" data-category="${method.category}">
+                        ${method.name}
+                        <span class="method-tag">${method.category}</span>
+                    </a>
+                `;
+                methodList.appendChild(li);
+            });
+            
+            // Add click event listeners to method links
+            const methodLinks = methodList.querySelectorAll('a');
+            methodLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const index = this.getAttribute('data-index');
+                    scrollToMethod(index);
+                    
+                    // Update active state
+                    methodLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // Render all method cards
+        function renderMethods(filteredMethods = memeMethods) {
+            methodsContainer.innerHTML = '';
+            
+            filteredMethods.forEach((method, index) => {
+                const methodCard = document.createElement('div');
+                methodCard.className = 'method-card';
+                methodCard.id = method.name;
+                
+                // Get category class
+                const categoryClass = method.category;
+                
+                methodCard.innerHTML = `
+                    <div class="method-header">
+                        <div class="method-title">
+                            <h2 class="method-name">${method.name}</h2>
+                            <span class="method-tag">${method.returns}</span>
+                        </div>
+                        <div class="method-category">
+                            <span class="category-tag ${categoryClass}">${categoryClass}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="method-description">
+                        <p>${method.description}</p>
+                    </div>
+                    
+                    <div class="method-details">
+                        <div class="detail-section">
+                            <h4><i class="fas fa-code"></i> Parameters</h4>
+                            ${renderParametersTable(method.parameters)}
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4><i class="fas fa-arrow-right"></i> Returns</h4>
+                            <div class="code-block">
+                                <pre><code>${method.returns}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4><i class="fas fa-terminal"></i> Example Usage</h4>
+                            <div class="code-block">
+                                <pre><code class="code-keyword">const</code> buffer = <span class="code-keyword">await</span> meme.<span class="code-function">${method.name}</span>(${renderExampleParameters(method)});</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4><i class="fas fa-info-circle"></i> Notes</h4>
+                            <ul>
+                                <li>All methods are <code>async</code> and return a Promise</li>
+                                <li>Image methods accept both local file paths and URLs</li>
+                                ${method.name === 'yomomma' ? '<li>This method returns text only, not an image</li>' : ''}
+                                ${method.name === 'invert' ? '<li>This method inverts all colors in the image</li>' : ''}
+                                ${method.name === 'tweet' ? '<li>Generates realistic tweet with random engagement metrics</li>' : ''}
+                                <li>Text wrapping is automatically applied for long text</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                
+                methodsContainer.appendChild(methodCard);
+            });
+        }
+
+        // Helper function to render parameters table
+        function renderParametersTable(parameters) {
+            if (parameters.length === 0) {
+                return '<p>This method takes no parameters.</p>';
+            }
+            
+            let tableHTML = `
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            parameters.forEach(param => {
+                tableHTML += `
+                    <tr>
+                        <td><code>${param.name}</code></td>
+                        <td><code>${param.type}</code></td>
+                        <td>${param.required ? '<span style="color: var(--success)">Yes</span>' : '<span style="color: var(--warning)">No</span>'}</td>
+                        <td>${param.description}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += '</tbody></table>';
+            return tableHTML;
+        }
+
+        // Helper function to render example parameters
+        function renderExampleParameters(method) {
+            if (method.parameters.length === 0) {
+                return '';
+            }
+            
+            const examples = {
+                'text': '"Sample text"',
+                'avatar0': '"https://example.com/avatar.jpg"',
+                'avatar1': '"avatar2.png"',
+                'username0': '"JohnDoe"',
+                'username1': '"johndoe"'
+            };
+            
+            return method.parameters.map(param => examples[param.name] || '""').join(', ');
+        }
+
+        // Filter methods based on search and category
+        function filterMethods() {
+            const searchTerm = methodSearch.value.toLowerCase();
+            const selectedCategory = categoryFilter.value;
+            
+            const filtered = memeMethods.filter(method => {
+                const matchesSearch = method.name.toLowerCase().includes(searchTerm) || 
+                                     method.description.toLowerCase().includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || method.category === selectedCategory;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            renderMethods(filtered);
+            
+            // Update method list highlighting
+            const methodLinks = methodList.querySelectorAll('a');
+            methodLinks.forEach(link => {
+                const methodName = link.getAttribute('href').substring(1);
+                const isVisible = filtered.some(m => m.name === methodName);
+                link.style.display = isVisible ? 'block' : 'none';
+            });
+        }
+
+        // Scroll to a specific method
+        function scrollToMethod(index) {
+            const method = memeMethods[index];
+            if (!method) return;
+            
+            const element = document.getElementById(method.name);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Highlight current method in sidebar when scrolling
+        function highlightCurrentMethod() {
+            const methodCards = document.querySelectorAll('.method-card');
+            const methodLinks = document.querySelectorAll('.method-list a');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        methodLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            methodCards.forEach(card => observer.observe(card));
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search input
+            methodSearch.addEventListener('input', filterMethods);
+            
+            // Category filter
+            categoryFilter.addEventListener('change', filterMethods);
+            
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+            });
+            
+            // Scroll to top button
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+            
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!mainNav.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    mainNav.classList.remove('active');
+                }
+            });
+            
+            // Navigation links
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    
+                    // Update active nav link
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Close mobile menu
+                    mainNav.classList.remove('active');
+                });
+            });
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
